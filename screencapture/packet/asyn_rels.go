@@ -1,26 +1,14 @@
 package packet
 
-import (
-	"fmt"
-)
-
-//AsynRelsPacket tells us that a clock was released
+// AsynRelsPacket tells us that a clock was released
 type AsynRelsPacket struct {
 	ClockRef CFTypeID
 }
 
-//NewAsynRelsPacketFromBytes creates a new AsynRelsPacket from bytes
+// NewAsynRelsPacketFromBytes creates a new AsynRelsPacket from bytes
 func NewAsynRelsPacketFromBytes(data []byte) (AsynRelsPacket, error) {
-	var packet = AsynRelsPacket{}
-	_, clockRef, err := ParseAsynHeader(data, RELS)
-	if err != nil {
-		return packet, err
-	}
-	packet.ClockRef = clockRef
-
-	return packet, nil
+	_ = "STUB: not implemented"
+	return *new(AsynRelsPacket), nil
 }
 
-func (sp AsynRelsPacket) String() string {
-	return fmt.Sprintf("ASYN_RELS{ClockRef:%x}", sp.ClockRef)
-}
+func (sp AsynRelsPacket) String() string { _ = "STUB: not implemented"; return "" }

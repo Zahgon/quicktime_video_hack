@@ -1,13 +1,10 @@
 package packet
 
 import (
-	"encoding/binary"
-
-	"github.com/danielpaulus/quicktime_video_hack/screencapture/common"
 	"github.com/danielpaulus/quicktime_video_hack/screencapture/coremedia"
 )
 
-//Async Packet types
+// Async Packet types
 const (
 	AsynPacketMagic uint32 = 0x6173796E
 	FEED            uint32 = 0x66656564 //These contain CMSampleBufs which contain raw h264 Nalus
@@ -24,123 +21,42 @@ const (
 	HPA0            uint32 = 0x68706130
 )
 
-//NewAsynHpd1Packet creates a []byte containing a valid ASYN packet with the Hpd1 dictionary
+// NewAsynHpd1Packet creates a []byte containing a valid ASYN packet with the Hpd1 dictionary
 func NewAsynHpd1Packet(stringKeyDict coremedia.StringKeyDict) []byte {
-	return newAsynDictPacket(stringKeyDict, HPD1, EmptyCFType)
+	_ = "STUB: not implemented"
+	return nil
 }
 
-//NewAsynHpa1Packet creates a []byte containing a valid ASYN packet with the Hpa1 dictionary
+// NewAsynHpa1Packet creates a []byte containing a valid ASYN packet with the Hpa1 dictionary
 func NewAsynHpa1Packet(stringKeyDict coremedia.StringKeyDict, clockRef CFTypeID) []byte {
-	return newAsynDictPacket(stringKeyDict, HPA1, clockRef)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func newAsynDictPacket(stringKeyDict coremedia.StringKeyDict, subtypeMarker uint32, asynTypeHeader uint64) []byte {
-	serialize := coremedia.SerializeStringKeyDict(stringKeyDict)
-	length := len(serialize) + 20
-	header := make([]byte, 20)
-	binary.LittleEndian.PutUint32(header, uint32(length))
-	binary.LittleEndian.PutUint32(header[4:], AsynPacketMagic)
-	binary.LittleEndian.PutUint64(header[8:], asynTypeHeader)
-	binary.LittleEndian.PutUint32(header[16:], subtypeMarker)
-	return append(header, serialize...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
-//AsynNeedPacketBytes can be used to create the NEED message as soon as the clockRef from SYNC CVRP has been received.
-func AsynNeedPacketBytes(clockRef CFTypeID) []byte {
-	needPacketLength := 20
-	packet := make([]byte, needPacketLength)
-	binary.LittleEndian.PutUint32(packet, uint32(needPacketLength))
-	binary.LittleEndian.PutUint32(packet[4:], AsynPacketMagic)
-	binary.LittleEndian.PutUint64(packet[8:], clockRef)
-	binary.LittleEndian.PutUint32(packet[16:], NEED) //need - deen
-	return packet
-}
+// AsynNeedPacketBytes can be used to create the NEED message as soon as the clockRef from SYNC CVRP has been received.
+func AsynNeedPacketBytes(clockRef CFTypeID) []byte { _ = "STUB: not implemented"; return nil }
 
-//CreateHpd1DeviceInfoDict creates a dict.StringKeyDict that needs to be sent to the device before receiving a feed
+//need - deen
+
+// CreateHpd1DeviceInfoDict creates a dict.StringKeyDict that needs to be sent to the device before receiving a feed
 func CreateHpd1DeviceInfoDict() coremedia.StringKeyDict {
-	resultDict := coremedia.StringKeyDict{Entries: make([]coremedia.StringKeyEntry, 3)}
-	displaySizeDict := coremedia.StringKeyDict{Entries: make([]coremedia.StringKeyEntry, 2)}
-	resultDict.Entries[0] = coremedia.StringKeyEntry{
-		Key:   "Valeria",
-		Value: true,
-	}
-	resultDict.Entries[1] = coremedia.StringKeyEntry{
-		Key:   "HEVCDecoderSupports444",
-		Value: true,
-	}
-
-	displaySizeDict.Entries[0] = coremedia.StringKeyEntry{
-		Key:   "Width",
-		Value: common.NewNSNumberFromUFloat64(1920),
-	}
-	displaySizeDict.Entries[1] = coremedia.StringKeyEntry{
-		Key:   "Height",
-		Value: common.NewNSNumberFromUFloat64(1200),
-	}
-
-	resultDict.Entries[2] = coremedia.StringKeyEntry{
-		Key:   "DisplaySize",
-		Value: displaySizeDict,
-	}
-
-	return resultDict
+	_ = "STUB: not implemented"
+	return *new(coremedia.StringKeyDict)
 }
 
-//CreateHpa1DeviceInfoDict creates a dict.StringKeyDict that needs to be sent to the device before receiving a feed
+// CreateHpa1DeviceInfoDict creates a dict.StringKeyDict that needs to be sent to the device before receiving a feed
 func CreateHpa1DeviceInfoDict() coremedia.StringKeyDict {
-	asbdBytes := make([]byte, 56)
-	coremedia.DefaultAudioStreamBasicDescription().SerializeAudioStreamBasicDescription(asbdBytes)
-	resultDict := coremedia.StringKeyDict{Entries: make([]coremedia.StringKeyEntry, 6)}
-	resultDict.Entries[0] = coremedia.StringKeyEntry{
-		Key:   "BufferAheadInterval",
-		Value: common.NewNSNumberFromUFloat64(0.07300000000000001),
-	}
-
-	resultDict.Entries[1] = coremedia.StringKeyEntry{
-		Key:   "deviceUID",
-		Value: "Valeria",
-	}
-
-	resultDict.Entries[2] = coremedia.StringKeyEntry{
-		Key:   "ScreenLatency",
-		Value: common.NewNSNumberFromUFloat64(0.04),
-	}
-
-	resultDict.Entries[3] = coremedia.StringKeyEntry{
-		Key:   "formats",
-		Value: asbdBytes,
-	}
-
-	resultDict.Entries[4] = coremedia.StringKeyEntry{
-		Key:   "EDIDAC3Support",
-		Value: common.NewNSNumberFromUInt32(0),
-	}
-
-	resultDict.Entries[5] = coremedia.StringKeyEntry{
-		Key:   "deviceName",
-		Value: "Valeria",
-	}
-	return resultDict
+	_ = "STUB: not implemented"
+	return *new(coremedia.StringKeyDict)
 }
 
-//NewAsynHPD0 creates the bytes needed for stopping video streaming
-func NewAsynHPD0() []byte {
-	length := 20
-	data := make([]byte, length)
-	binary.LittleEndian.PutUint32(data, uint32(length))
-	binary.LittleEndian.PutUint32(data[4:], AsynPacketMagic)
-	binary.LittleEndian.PutUint64(data[8:], EmptyCFType)
-	binary.LittleEndian.PutUint32(data[16:], HPD0)
-	return data
-}
+// NewAsynHPD0 creates the bytes needed for stopping video streaming
+func NewAsynHPD0() []byte { _ = "STUB: not implemented"; return nil }
 
-//NewAsynHPA0 creates the bytes needed for stopping audio streaming
-func NewAsynHPA0(clockRef uint64) []byte {
-	length := 20
-	data := make([]byte, length)
-	binary.LittleEndian.PutUint32(data, uint32(length))
-	binary.LittleEndian.PutUint32(data[4:], AsynPacketMagic)
-	binary.LittleEndian.PutUint64(data[8:], clockRef)
-	binary.LittleEndian.PutUint32(data[16:], HPA0)
-	return data
-}
+// NewAsynHPA0 creates the bytes needed for stopping audio streaming
+func NewAsynHPA0(clockRef uint64) []byte { _ = "STUB: not implemented"; return nil }

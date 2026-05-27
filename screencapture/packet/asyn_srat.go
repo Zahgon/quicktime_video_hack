@@ -1,10 +1,6 @@
 package packet
 
 import (
-	"encoding/binary"
-	"fmt"
-	"math"
-
 	"github.com/danielpaulus/quicktime_video_hack/screencapture/coremedia"
 )
 
@@ -16,25 +12,10 @@ type AsynSratPacket struct {
 	Time     coremedia.CMTime
 }
 
-//NewAsynSratPacketFromBytes parses a new AsynSratPacket from bytes
+// NewAsynSratPacketFromBytes parses a new AsynSratPacket from bytes
 func NewAsynSratPacketFromBytes(data []byte) (AsynSratPacket, error) {
-	var packet = AsynSratPacket{}
-	remainingBytes, clockRef, err := ParseAsynHeader(data, SRAT)
-	if err != nil {
-		return packet, err
-	}
-	packet.ClockRef = clockRef
-
-	packet.Rate1 = math.Float32frombits(binary.LittleEndian.Uint32(remainingBytes))
-	packet.Rate2 = math.Float32frombits(binary.LittleEndian.Uint32(remainingBytes[4:]))
-	cmtime, err := coremedia.NewCMTimeFromBytes(remainingBytes[8:])
-	if err != nil {
-		return packet, err
-	}
-	packet.Time = cmtime
-	return packet, nil
+	_ = "STUB: not implemented"
+	return *new(AsynSratPacket), nil
 }
 
-func (sp AsynSratPacket) String() string {
-	return fmt.Sprintf("ASYN_SRAT{ClockRef:%x, Rate1:%f, Rate2:%f, Time:%s}", sp.ClockRef, sp.Rate1, sp.Rate2, sp.Time.String())
-}
+func (sp AsynSratPacket) String() string { _ = "STUB: not implemented"; return "" }

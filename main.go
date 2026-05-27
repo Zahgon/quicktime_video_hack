@@ -1,19 +1,12 @@
 package main
 
 import (
-	"bufio"
-	"encoding/json"
 	"fmt"
 	stdlog "log"
 	"os"
-	"os/signal"
-	"strings"
 	"time"
 
-	"github.com/danielpaulus/go-ios/ios"
 	"github.com/danielpaulus/quicktime_video_hack/screencapture"
-	"github.com/danielpaulus/quicktime_video_hack/screencapture/coremedia"
-	"github.com/danielpaulus/quicktime_video_hack/screencapture/diagnostics"
 	"github.com/danielpaulus/quicktime_video_hack/screencapture/gstadapter"
 	"github.com/docopt/docopt-go"
 	log "github.com/sirupsen/logrus"
@@ -181,309 +174,73 @@ The commands work as following:
 	}
 }
 
-//findDevice grabs the first device on the host for a empty --udid
-//or tries to find the provided device otherwise
+// findDevice grabs the first device on the host for a empty --udid
+// or tries to find the provided device otherwise
 func findDevice(udid string) (screencapture.IosDevice, error) {
-	if udid == "" {
-		return screencapture.FindIosDevice("")
-	}
-	usbSerial, err := screencapture.ValidateUdid(udid)
-	if err != nil {
-		return screencapture.IosDevice{}, err
-	}
-	log.Debugf("requested usb-serial:'%s' from udid:%s", usbSerial, udid)
-
-	return screencapture.FindIosDevice(usbSerial)
+	_ = "STUB: not implemented"
+	return *new(screencapture.IosDevice), nil
 }
 
-func printVersion() {
-	versionMap := map[string]interface{}{
-		"version": version,
-	}
-	printJSON(versionMap)
-}
+func printVersion() { _ = "STUB: not implemented"; return }
 
-func printExamples() {
-
-	examples := `Examples:
-	
-	Writing an MP4 file
-	This pipeline will save the recording in video.mp4 with h264 and aac format. The default settings 
-	of this pipeline will create a compressed video that takes up way less space than raw h264.
-	Note that you need to set "ignore-length" on the wavparse because we are streaming and do not know the length in advance.
-
-	Write MP4 file Mac OSX: 
-	vtdec is the hardware accelerated decoder on the mac. 
-
-	qvh gstreamer --pipeline "mp4mux name=mux ! filesink location=video.mp4 \
-	queue name=audio_target ! wavparse ignore-length=true ! audioconvert ! faac ! aacparse ! mux. \
-	queue name=video_target ! h264parse ! vtdec ! videoconvert ! x264enc  tune=zerolatency !  mux."
-	
-	Write MP4 file Linux:
-    note that I am using software en and decoding, if you have intel VAAPI available, maybe use those. 
-
-	gstreamer --pipeline "mp4mux name=mux ! filesink location=video.mp4 \
-    queue name=audio_target ! wavparse ignore-length=true ! audioconvert ! avenc_aac ! aacparse ! mux. \
-    queue name=video_target ! h264parse ! avdec_h264 ! videoconvert ! x264enc tune=zerolatency ! mux."
-	`
-	fmt.Print(examples)
-}
+func printExamples() { _ = "STUB: not implemented"; return }
 
 func recordAudioGst(outfile string, device screencapture.IosDevice, audiotype string) {
-	log.Debug("Starting Gstreamer with audio pipeline")
-	gStreamer, err := gstadapter.NewWithAudioPipeline(outfile, audiotype)
-	if err != nil {
-		printErrJSON(err, "Failed creating custom pipeline")
-		return
-	}
-	startWithConsumer(gStreamer, device, true)
+	_ = "STUB: not implemented"
+	return
 }
 
 func runDiagnostics(outfile string, dump bool, dumpFile string, device screencapture.IosDevice) {
-	log.Debugf("diagnostics mode: %s  dump:%t %s device:%s", outfile, dump, dumpFile, device.SerialNumber)
-	metricsFile, err := os.Create(outfile)
-	if err != nil {
-		log.Errorf("Could not open file '%s'", outfile)
-	}
-	defer metricsFile.Close()
-	consumer := diagnostics.NewDiagnosticsConsumer(metricsFile, time.Second*10)
-	if dump {
-		startWithConsumerDump(consumer, device, dumpFile)
-		return
-	}
-	startWithConsumer(consumer, device, false)
+	_ = "STUB: not implemented"
+	return
 }
 
 func recordAudioWav(outfile string, device screencapture.IosDevice) {
-	log.Debug("Starting Gstreamer with audio pipeline")
-	wavFile, err := os.Create(outfile)
-	if err != nil {
-		log.Debugf("Error creating wav file:%s", err)
-		log.Errorf("Could not open wav file '%s'", outfile)
-	}
-	wavFileWriter := coremedia.NewAVFileWriterAudioOnly(wavFile)
-
-	defer func() {
-		stat, err := wavFile.Stat()
-		if err != nil {
-			log.Fatal("Could not get wav file stats", err)
-		}
-		err = coremedia.WriteWavHeader(int(stat.Size()), wavFile)
-		if err != nil {
-			log.Fatalf("Error writing wave header %s might be invalid. %s", outfile, err.Error())
-		}
-		err = wavFile.Close()
-		if err != nil {
-			log.Fatalf("Error closing wave file. '%s' might be invalid. %s", outfile, err.Error())
-		}
-
-	}()
-	startWithConsumer(wavFileWriter, device, true)
+	_ = "STUB: not implemented"
+	return
 }
 
 func startGStreamerWithCustomPipeline(device screencapture.IosDevice, pipelineString string) {
-	log.Debug("Starting Gstreamer with custom pipeline")
-	gStreamer, err := gstadapter.NewWithCustomPipeline(pipelineString)
-	if err != nil {
-		printErrJSON(err, "Failed creating custom pipeline")
-		return
-	}
-	startWithConsumer(gStreamer, device, false)
+	_ = "STUB: not implemented"
+	return
 }
 
-func startGStreamer(device screencapture.IosDevice) {
-	log.Debug("Starting Gstreamer")
-	gStreamer := gstadapter.New()
-	startWithConsumer(gStreamer, device, false)
-}
+func startGStreamer(device screencapture.IosDevice) { _ = "STUB: not implemented"; return }
 
 // Just dump a list of what was discovered to the console
-func devices() {
-	deviceList, err := screencapture.FindIosDevices()
-	if err != nil {
-		printErrJSON(err, "Error finding iOS Devices")
-	}
-	log.Debugf("Found (%d) iOS Devices with UsbMux Endpoint", len(deviceList))
-
-	if err != nil {
-		printErrJSON(err, "Error finding iOS Devices")
-	}
-	output := screencapture.PrintDeviceDetails(deviceList)
-
-	printJSON(map[string]interface{}{"devices": output})
-}
+func devices() { _ = "STUB: not implemented"; return }
 
 // This command is for testing if we can enable the hidden Quicktime device config
-func activate(device screencapture.IosDevice) {
-	log.Debugf("Enabling device: %v", device)
-	var err error
-	device, err = screencapture.EnableQTConfig(device)
-	if err != nil {
-		printErrJSON(err, "Error enabling QT config")
-		return
-	}
+func activate(device screencapture.IosDevice) { _ = "STUB: not implemented"; return }
 
-	printJSON(map[string]interface{}{
-		"device_activated": device.DetailsMap(),
-	})
-}
-
-func deactivate(device screencapture.IosDevice) {
-        log.Debugf("Disabling device: %v", device)
-        var err error
-        device, err = screencapture.DisableQTConfig(device)
-        if err != nil {
-                printErrJSON(err, "Error disabling QT config")
-                return
-        }
-
-        printJSON(map[string]interface{}{
-                "device_activated": device.DetailsMap(),
-        })
-}
+func deactivate(device screencapture.IosDevice) { _ = "STUB: not implemented"; return }
 
 func record(h264FilePath string, wavFilePath string, device screencapture.IosDevice) {
-	log.Debugf("Writing video output to:'%s' and audio to: %s", h264FilePath, wavFilePath)
-
-	h264File, err := os.Create(h264FilePath)
-	if err != nil {
-		log.Debugf("Error creating h264File:%s", err)
-		log.Errorf("Could not open h264File '%s'", h264FilePath)
-	}
-	wavFile, err := os.Create(wavFilePath)
-	if err != nil {
-		log.Debugf("Error creating wav file:%s", err)
-		log.Errorf("Could not open wav file '%s'", wavFilePath)
-	}
-
-	writer := coremedia.NewAVFileWriter(bufio.NewWriter(h264File), bufio.NewWriter(wavFile))
-
-	defer func() {
-		stat, err := wavFile.Stat()
-		if err != nil {
-			log.Fatal("Could not get wav file stats", err)
-		}
-		err = coremedia.WriteWavHeader(int(stat.Size()), wavFile)
-		if err != nil {
-			log.Fatalf("Error writing wave header %s might be invalid. %s", wavFilePath, err.Error())
-		}
-		err = wavFile.Close()
-		if err != nil {
-			log.Fatalf("Error closing wave file. '%s' might be invalid. %s", wavFilePath, err.Error())
-		}
-		err = h264File.Close()
-		if err != nil {
-			log.Fatalf("Error closing h264File '%s'. %s", h264FilePath, err.Error())
-		}
-
-	}()
-	startWithConsumer(writer, device, false)
+	_ = "STUB: not implemented"
+	return
 }
 
 func startWithConsumer(consumer screencapture.CmSampleBufConsumer, device screencapture.IosDevice, audioOnly bool) {
-	var err error
-	device, err = screencapture.EnableQTConfig(device)
-	if err != nil {
-		printErrJSON(err, "Error enabling QT config")
-		return
-	}
-
-	adapter := screencapture.UsbAdapter{}
-	stopSignal := make(chan interface{})
-	waitForSigInt(stopSignal)
-
-	mp := screencapture.NewMessageProcessor(&adapter, stopSignal, consumer, audioOnly)
-
-	err = adapter.StartReading(device, &mp, stopSignal)
-	consumer.Stop()
-	if err != nil {
-		printErrJSON(err, "failed connecting to usb")
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 func startWithConsumerDump(consumer screencapture.CmSampleBufConsumer, device screencapture.IosDevice, dumpPath string) {
-	var err error
-	device, err = screencapture.EnableQTConfig(device)
-	if err != nil {
-		printErrJSON(err, "Error enabling QT config")
-		return
-	}
-
-	inboundMessagesFile, err := os.Create("inbound-" + dumpPath)
-	if err != nil {
-		log.Fatalf("Could not open file: %v", err)
-	}
-	defer inboundMessagesFile.Close()
-	outboundMessagesFile, err := os.Create("outbound-" + dumpPath)
-	if err != nil {
-		log.Fatalf("Could not open file: %v", err)
-	}
-	defer outboundMessagesFile.Close()
-	log.Debug("Start dumping all binary transfer")
-	adapter := screencapture.UsbAdapter{Dump: true, DumpInWriter: inboundMessagesFile, DumpOutWriter: outboundMessagesFile}
-	stopSignal := make(chan interface{})
-	waitForSigInt(stopSignal)
-
-	mp := screencapture.NewMessageProcessor(&adapter, stopSignal, consumer, false)
-
-	err = adapter.StartReading(device, &mp, stopSignal)
-	consumer.Stop()
-	if err != nil {
-		printErrJSON(err, "failed connecting to usb")
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
-func waitForSigInt(stopSignalChannel chan interface{}) {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-	go func() {
-		for sig := range c {
-			log.Debugf("Signal received: %s", sig)
-			var stopSignal interface{}
-			stopSignalChannel <- stopSignal
-		}
-	}()
-}
+func waitForSigInt(stopSignalChannel chan interface{}) { _ = "STUB: not implemented"; return }
 
-func checkDeviceIsPaired(device screencapture.IosDevice) {
-	dev, err := ios.GetDevice(screencapture.Correct24CharacterSerial(device.SerialNumber))
-	if err != nil {
-		printErrJSON(err, "device not found, is it still connected?")
-		os.Exit(1)
-	}
-	allValues, err := ios.GetValuesPlist(dev)
-	if err != nil {
-		printErrJSON(err, "failed getting deviceinfo, you need to pair the device before running qvh")
-		os.Exit(1)
-	}
-	log.Infof("found %s %s for udid %s", allValues["DeviceName"], allValues["ProductVersion"], dev.Properties.SerialNumber)
-}
+func checkDeviceIsPaired(device screencapture.IosDevice) { _ = "STUB: not implemented"; return }
 
-func printErrJSON(err error, msg string) {
-	printJSON(map[string]interface{}{
-		"original_error": err.Error(),
-		"error_message":  msg,
-	})
-}
-func printJSON(output map[string]interface{}) {
-	text, err := json.Marshal(output)
-	if err != nil {
-		log.Fatalf("Broken json serialization, error: %s", err)
-	}
-	println(string(text))
-}
+func printErrJSON(err error, msg string) { _ = "STUB: not implemented"; return }
 
-//this is to ban these irritating "2021/04/29 14:27:59 handle_events: error: libusb: interrupted [code -10]" libusb messages
+func printJSON(output map[string]interface{}) { _ = "STUB: not implemented"; return }
+
+// this is to ban these irritating "2021/04/29 14:27:59 handle_events: error: libusb: interrupted [code -10]" libusb messages
 type LogrusWriter int
 
 const interruptedError = "interrupted [code -10]"
 
-func (LogrusWriter) Write(data []byte) (int, error) {
-	logmessage := string(data)
-	if strings.Contains(logmessage, interruptedError) {
-		log.Tracef("gousb_logs:%s", logmessage)
-		return len(data), nil
-	}
-	log.Infof("gousb_logs:%s", logmessage)
-	return len(data), nil
-}
+func (LogrusWriter) Write(data []byte) (int, error) { _ = "STUB: not implemented"; return 0, nil }

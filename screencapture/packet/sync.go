@@ -1,10 +1,6 @@
 package packet
 
-import (
-	"encoding/binary"
-)
-
-//Different Sync Packet Magic Markers
+// Different Sync Packet Magic Markers
 const (
 	SyncPacketMagic  uint32 = 0x73796E63
 	ReplyPacketMagic uint32 = 0x72706C79
@@ -18,19 +14,13 @@ const (
 	STOP             uint32 = 0x73746F70
 )
 
-//CFTypeID is just a type alias for uint64 but I think it is closer to what is happening on MAC/iOS
+// CFTypeID is just a type alias for uint64 but I think it is closer to what is happening on MAC/iOS
 type CFTypeID = uint64
 
-//EmptyCFType is a CFTypeId of 0x1
+// EmptyCFType is a CFTypeId of 0x1
 const EmptyCFType CFTypeID = 1
 
 func clockRefReply(clockRef uint64, correlationID uint64) []byte {
-	length := 28
-	data := make([]byte, length)
-	binary.LittleEndian.PutUint32(data, uint32(length))
-	binary.LittleEndian.PutUint32(data[4:], ReplyPacketMagic)
-	binary.LittleEndian.PutUint64(data[8:], correlationID)
-	binary.LittleEndian.PutUint32(data[16:], 0)
-	binary.LittleEndian.PutUint64(data[20:], clockRef)
-	return data
+	_ = "STUB: not implemented"
+	return nil
 }
